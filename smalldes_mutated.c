@@ -43,7 +43,7 @@ int getPermInd(int, int[]);
 int main(void)
 {
 	FILE *Fi, Fo;
-	Fi = fopen("sample.txt", "r");
+	Fi = fopen("sample2.txt", "r");
 	char S[32], SN[12], plain[18], cipher[18], k[16];
 	int i, j, S_P, IP_i, IP_j, P_i, P_j, swap, flag = 0, cases = 0;
 	int perm[16] = {10, 3, 4, 5, 9, 11, 13, 1, 6, 16, 2, 14, 8, 15, 7, 12};
@@ -52,7 +52,6 @@ int main(void)
 						{1, 2, 3, 2, 4, 5, 6, 4, 7, 8, 9, 6, 10, 11, 12, 8},
 						{1, 2, 3, 3, 4, 5, 6, 6, 7, 8, 9, 9, 10, 11, 12, 12},
 						{1, 2, 3, 4, 4, 5, 6, 8, 7, 8, 9, 12, 10, 11, 12, 4}};
-	int S_Perm[12] = {1234, 1243, 1324, 1342, 1423, 1432, 2134, 2143, 2314, 2341, 2413, 2431};
 	struct List *inputL = (struct List*)malloc(sizeof(struct List));
 	struct List *inputR = (struct List*)malloc(sizeof(struct List));
 	struct List *temp = (struct List*)malloc(sizeof(struct List));
@@ -64,7 +63,7 @@ int main(void)
 	fscanf(Fi, "%s", S);
 	fscanf(Fi, "%s", S);
 	
-	for (cases = 0; cases < 54; cases++)
+	for (cases = 0; cases < 3; cases++)
 	{
 		flag = 0;
 		// Student No.
@@ -95,13 +94,13 @@ int main(void)
 		{
 			for (IP_j = IP_i+1; IP_j < 16; IP_j++)
 			{
-				//printf("[%i, %i]\n", IP_i, IP_j);
+				printf("[%i, %i]\n", IP_i, IP_j);
 				for (P_i = 0; P_i < 7; P_i++)
 				{
 					for (P_j = P_i+1; P_j < 8; P_j++)
 					{
 						//printf("[%i, %i, %i, %i]\n", IP_i, IP_j, P_i, P_j);
-						for (S_P = 0; S_P < 24; S_P++)
+						for (S_P = 0; S_P < 256; S_P++)
 						{
 							initList(inputL);
 							initList(inputR);
@@ -145,10 +144,7 @@ int main(void)
 									insertList(subkey, (int)k[key2[i][j]-1]-48);
 								for (j = 0; j < 8; j++)
 								{
-									if (S_P < 12)
-										editList(temp, j, (getListElem(inputL, j)+roundFunc(inputR, subkey, j, S_Perm[S_P], P_i, P_j))%2);
-									else
-										editList(temp, j, (getListElem(inputL, j)+roundFunc(inputR, subkey, j, 5555-S_Perm[S_P%12], P_i, P_j))%2);
+									editList(temp, j, (getListElem(inputL, j)+roundFunc(inputR, subkey, j, S_P/64*1000 + (S_P%64)/16*100 + ((S_P%64)%16)/4*10 + (((S_P%64)%16)%4)/1, P_i, P_j))%2);
 									editList(temp2, j, getListElem(inputR, j));
 								}
 								for (j = 0; j < 8; j++)
@@ -177,7 +173,7 @@ int main(void)
 								printf("Student No: %s\n", SN);
 								printf("Config: [%i, %i, %i, %i, %i]\n", IP_i, IP_j, P_i, P_j, S_P);
 								printf("Ciphertext: "); printList(output);
-								printf("CorrectOut: %s\n", cipher);
+								printf("CorrectOut: %s\n\n", cipher);
 								flag = 1;
 							}
 							/** STEP 6-7 **/
@@ -287,9 +283,9 @@ int roundFunc(struct List *R, struct List *K, int ind, int S_Perm, int Pi, int P
 		// STEP 5a-b
 		
 		// STEP 5c-e
-		c = S_Box[S_Perm/pow-1][(getListElem(exp, 0))*2 + (getListElem(exp, 3))][(getListElem(exp, 1))*2 + (getListElem(exp, 2))][1];
+		c = S_Box[S_Perm/pow][(getListElem(exp, 0))*2 + (getListElem(exp, 3))][(getListElem(exp, 1))*2 + (getListElem(exp, 2))][1];
 		insertList(temp, (int)c-48);
-		c = S_Box[S_Perm/pow-1][(getListElem(exp, 0))*2 + (getListElem(exp, 3))][(getListElem(exp, 1))*2 + (getListElem(exp, 2))][2];
+		c = S_Box[S_Perm/pow][(getListElem(exp, 0))*2 + (getListElem(exp, 3))][(getListElem(exp, 1))*2 + (getListElem(exp, 2))][2];
 		insertList(temp, (int)c-48);
 		S_Perm = S_Perm%pow;
 		pow = pow/10;
